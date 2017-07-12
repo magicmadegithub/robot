@@ -17,8 +17,9 @@ coin_map = {'btc': 'btccny',
             'eos': 'eoscny'}
 
 bot = Bot(cache_path=True, console_qr=True)
-my_friend = bot.friends().search('小麻&amp;bits')[0]
-my_group = ensure_one(bot.groups().search('python^_^java'))
+assigned_people = bot.friends().search('小麻&amp;bits')[0]
+assigned_group = ensure_one(bot.groups().search('python^_^java'))
+robot_groups = bot.groups().search()
 
 
 # 查询云币币价
@@ -56,14 +57,26 @@ def print_others(msg):
     print(msg)
 
 
-# 回复 my_friend 的消息 (优先匹配后注册的函数!)
-@bot.register(my_friend)
+# 回复指定人的消息 (优先匹配后注册的函数!)
+@bot.register(assigned_people)
 def reply_my_friend(msg):
     return get_robot_response(msg.text)
 
 
 # 回复指定群消息
-@bot.register(my_group)
+@bot.register(assigned_group)
+def forward_group_message(msg):
+    if msg.is_at:
+        text = msg.text.split()[1]
+        return get_robot_response(text)
+    elif msg.text.lower() in coin_map.keys():
+        return query_coin_price(coin_map.get(msg.text.lower()))
+    else:
+        print(msg)
+
+
+# 回复包含小图的群消息
+@bot.register(robot_groups)
 def forward_group_message(msg):
     if msg.is_at:
         text = msg.text.split()[1]
