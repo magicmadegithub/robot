@@ -99,7 +99,7 @@ def forward_group_message(msg):
         return get_robot_response(text)
     elif msg.text.lower() in coin_map.keys():
         return query_one_coin(coin_map.get(msg.text.lower()))
-    elif msg.text.lower == 'coins':
+    elif msg.text.lower() == 'coins':
         return query_all_coins()
     else:
         print(msg)

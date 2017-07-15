@@ -25,5 +25,12 @@ def query_all_coins():
     print(all_coins_price)
 
 
+def forward_group_message(msg):
+    if msg == 'coins':
+        return query_all_coins()
+    else:
+        print(msg)
+
+
 if __name__ == '__main__':
-    query_all_coins()
+    forward_group_message('coins')
