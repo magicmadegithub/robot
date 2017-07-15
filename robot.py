@@ -83,9 +83,9 @@ def forward_group_message(msg):
     if msg.is_at:
         text = msg.text.split()[1]
         return get_robot_response(text)
-    elif msg.text.lower().trip() in coin_map.keys():
+    elif msg.text.lower().strip() in coin_map.keys():
         return query_one_coin(coin_map.get(msg.text.lower()))
-    elif msg.text.lower().trip() == 'coins':
+    elif msg.text.lower().strip() == 'coins':
         return query_all_coins()
     else:
         print(msg)
@@ -97,9 +97,9 @@ def forward_group_message(msg):
     if msg.is_at:
         text = msg.text.split()[1]
         return get_robot_response(text)
-    elif msg.text.lower().trip() in coin_map.keys():
+    elif msg.text.lower().strip() in coin_map.keys():
         return query_one_coin(coin_map.get(msg.text.lower()))
-    elif msg.text.lower().trip() == 'coins':
+    elif msg.text.lower().strip() == 'coins':
         return query_all_coins()
     else:
         print(msg)
@@ -110,7 +110,7 @@ def forward_group_message(msg):
 # 自动接受验证信息中包含 'robot' 的好友请求
 def auto_accept_friends(msg):
     # 判断好友请求中的验证文本
-    if 'robot' in msg.text.lower():
+    if 'robot' in msg.text.lower().strip():
         # 接受好友 (msg.card 为该请求的用户对象)
         new_friend = bot.accept_friend(msg.card)
         # 或 new_friend = msg.card.accept()
