@@ -22,11 +22,25 @@ assigned_group = ensure_one(bot.groups().search('python^_^java'))
 robot_groups = bot.groups().search()
 
 
-# 查询云币币价
-def query_coin_price(coin_name):
+# 云币单个币价查询
+def query_one_coin(coin_name):
     url = coin_url + coin_name + ".json"
     r = requests.get(url)
     return "云币当前价格：" + r.json()['ticker']['buy']
+
+
+# 云币主流币价格汇总
+def query_all_coins():
+    r = requests.get(coin_url)
+    dict_coins = r.json()
+    all_coins_price = '云币主流币价格:' + '\n'
+    for k, value in dict_coins.items():
+        name = k[:-3]
+        price = value['ticker']['buy']
+        if name in coin_map:
+            all_coins_price = all_coins_price + name + ":" + price + '\n'
+    print(all_coins_price)
+    return all_coins_price
 
 
 # 图灵机器人
@@ -70,7 +84,9 @@ def forward_group_message(msg):
         text = msg.text.split()[1]
         return get_robot_response(text)
     elif msg.text.lower() in coin_map.keys():
-        return query_coin_price(coin_map.get(msg.text.lower()))
+        return query_one_coin(coin_map.get(msg.text.lower()))
+    elif msg.text.lower == 'coins':
+        return query_all_coins()
     else:
         print(msg)
 
@@ -82,7 +98,9 @@ def forward_group_message(msg):
         text = msg.text.split()[1]
         return get_robot_response(text)
     elif msg.text.lower() in coin_map.keys():
-        return query_coin_price(coin_map.get(msg.text.lower()))
+        return query_one_coin(coin_map.get(msg.text.lower()))
+    elif msg.text.lower == 'coins':
+        return query_all_coins()
     else:
         print(msg)
 
