@@ -17,9 +17,14 @@ coin_map = {'btc': 'btccny',
             'eos': 'eoscny'}
 
 bot = Bot(cache_path=True, console_qr=True)
+# 指定用户
 assigned_people = bot.friends().search('小麻&amp;bits')[0]
+# 指定群组
 assigned_group = ensure_one(bot.groups().search('python^_^java'))
+# 所有群组
 robot_groups = bot.groups().search()
+# 图灵机器人
+tuling = Tuling(api_key=robot_key)
 
 
 # 云币单个币价查询
@@ -43,28 +48,6 @@ def query_all_coins():
     return all_coins_price
 
 
-# 图灵机器人
-def get_robot_response(msg):
-    data = {
-        'key': robot_key,
-        'info': msg,
-        'userid': 'wechat-robot',
-    }
-    try:
-        r = requests.post(robot_url, data=data).json()
-        # 字典的get方法在字典没有'text'值的时候会返回None而不会抛出异常
-        if r.get('code') == 200000:
-            text = r.get('text')
-            url = r.get('url')
-            print(text)
-            print(url)
-            return text + " " + url
-        else:
-            return r.get('text')
-    except:
-        return "我好像生病了"
-
-
 # 打印来自其他好友、群聊和公众号的消息
 @bot.register()
 def print_others(msg):
@@ -74,15 +57,14 @@ def print_others(msg):
 # 回复指定人的消息 (优先匹配后注册的函数!)
 @bot.register(assigned_people)
 def reply_my_friend(msg):
-    return get_robot_response(msg.text)
+    tuling.do_reply(msg)
 
 
 # 回复指定群消息
 @bot.register(assigned_group)
 def forward_group_message(msg):
     if msg.is_at:
-        text = msg.text.split()[1]
-        return get_robot_response(text)
+        tuling.do_reply(msg)
     elif msg.text.lower().strip() in coin_map.keys():
         return query_one_coin(coin_map.get(msg.text.lower()))
     elif msg.text.lower().strip() == 'coins':
@@ -95,8 +77,7 @@ def forward_group_message(msg):
 @bot.register(robot_groups)
 def forward_group_message(msg):
     if msg.is_at:
-        text = msg.text.split()[1]
-        return get_robot_response(text)
+        tuling.do_reply(msg)
     elif msg.text.lower().strip() in coin_map.keys():
         return query_one_coin(coin_map.get(msg.text.lower()))
     elif msg.text.lower().strip() == 'coins':
